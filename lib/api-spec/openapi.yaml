@@ -1,0 +1,556 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API Gateway Metrics Dashboard API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: metrics
+    description: API Gateway Metrics operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /metrics/summary:
+    get:
+      operationId: getMetricsSummary
+      tags: [metrics]
+      summary: Get metrics summary KPIs
+      description: Returns total requests, error rate, average duration, and unique clients
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Metrics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsSummary"
+
+  /metrics/by-user:
+    get:
+      operationId: getMetricsByUser
+      tags: [metrics]
+      summary: Get metrics grouped by user
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Metrics by user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupMetric"
+
+  /metrics/by-response-code:
+    get:
+      operationId: getMetricsByResponseCode
+      tags: [metrics]
+      summary: Get metrics grouped by response code
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Metrics by response code
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupMetric"
+
+  /metrics/by-client:
+    get:
+      operationId: getMetricsByClient
+      tags: [metrics]
+      summary: Get metrics grouped by client ID
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Metrics by client
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupMetric"
+
+  /metrics/by-api:
+    get:
+      operationId: getMetricsByApi
+      tags: [metrics]
+      summary: Get metrics grouped by API ID
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Metrics by API
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupMetric"
+
+  /metrics/by-resource:
+    get:
+      operationId: getMetricsByResource
+      tags: [metrics]
+      summary: Get metrics grouped by resource path
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Metrics by resource
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupMetric"
+
+  /metrics/timeseries:
+    get:
+      operationId: getMetricsTimeseries
+      tags: [metrics]
+      summary: Get request volume over time
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: interval
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["1h", "6h", "1d"]
+      responses:
+        "200":
+          description: Time series data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimeseriesPoint"
+
+  /metrics/raw:
+    get:
+      operationId: getMetricsRaw
+      tags: [metrics]
+      summary: Get raw request log records from database with filters
+      parameters:
+        - name: clientOrgId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: from_offset
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Full-text search across apiId, resource, clientId, user
+        - name: apiId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: user
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: resource
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: responseCode
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Comma-separated response code prefixes e.g. "2xx,4xx" or exact codes "200,404"
+      responses:
+        "200":
+          description: Raw metrics records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RawMetricsResponse"
+
+  /metrics/sync:
+    post:
+      operationId: syncMetrics
+      tags: [metrics]
+      summary: Sync recent requests from ElasticSearch into the database
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientOrgId:
+                  type: string
+                from:
+                  type: string
+                to:
+                  type: string
+                size:
+                  type: integer
+                  default: 1000
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResult"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    MetricsSummary:
+      type: object
+      properties:
+        totalRequests:
+          type: integer
+        successCount:
+          type: integer
+        errorCount:
+          type: integer
+        errorRate:
+          type: number
+        avgDurationMs:
+          type: number
+        p95DurationMs:
+          type: number
+        totalBytesUploaded:
+          type: integer
+        totalBytesDownloaded:
+          type: integer
+        uniqueClients:
+          type: integer
+        uniqueApis:
+          type: integer
+        uniqueUsers:
+          type: integer
+      required:
+        - totalRequests
+        - successCount
+        - errorCount
+        - errorRate
+        - avgDurationMs
+        - p95DurationMs
+        - totalBytesUploaded
+        - totalBytesDownloaded
+        - uniqueClients
+        - uniqueApis
+        - uniqueUsers
+
+    GroupMetric:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
+        successCount:
+          type: integer
+        errorCount:
+          type: integer
+        errorRate:
+          type: number
+        avgDurationMs:
+          type: number
+      required:
+        - key
+        - count
+        - successCount
+        - errorCount
+        - errorRate
+        - avgDurationMs
+
+    TimeseriesPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        requests:
+          type: integer
+        errors:
+          type: integer
+        avgDurationMs:
+          type: number
+      required:
+        - timestamp
+        - requests
+        - errors
+        - avgDurationMs
+
+    RawMetric:
+      type: object
+      properties:
+        id:
+          type: string
+        requestStart:
+          type: string
+        requestEnd:
+          type: string
+        requestDuration:
+          type: integer
+        apiDuration:
+          type: integer
+        url:
+          type: ["string", "null"]
+        resource:
+          type: ["string", "null"]
+        method:
+          type: string
+        apiOrgId:
+          type: string
+        apiId:
+          type: string
+        apiVersion:
+          type: string
+        planId:
+          type: ["string", "null"]
+        clientOrgId:
+          type: string
+        clientId:
+          type: string
+        clientVersion:
+          type: ["string", "null"]
+        user:
+          type: ["string", "null"]
+        responseCode:
+          type: integer
+        responseMessage:
+          type: string
+        failure:
+          type: boolean
+        error:
+          type: boolean
+        bytesUploaded:
+          type: integer
+        bytesDownloaded:
+          type: integer
+      required:
+        - id
+        - requestStart
+        - requestEnd
+        - requestDuration
+        - apiDuration
+        - method
+        - apiOrgId
+        - apiId
+        - apiVersion
+        - clientOrgId
+        - clientId
+        - responseCode
+        - responseMessage
+        - failure
+        - error
+        - bytesUploaded
+        - bytesDownloaded
+
+    RawMetricsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/RawMetric"
+      required:
+        - total
+        - records
+
+    SyncResult:
+      type: object
+      properties:
+        synced:
+          type: integer
+          description: Number of records inserted into the database
+        skipped:
+          type: integer
+          description: Number of duplicate records skipped
+        source:
+          type: string
+          description: Data source used for sync
+        error:
+          type: ["string", "null"]
+      required:
+        - synced
+        - skipped
+        - source
