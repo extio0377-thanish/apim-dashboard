@@ -217,6 +217,79 @@
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0);
 }
 
+/* ========================
+   COLOR THEMES
+   Apply data-theme="red|blue|green|orange|pink|light" to <html>
+   Default theme is Red
+   ======================== */
+
+:root,
+[data-theme="red"] {
+  --primary: 0 72% 51%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 0 72% 51%;
+  --sidebar-primary: 0 72% 51%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 0 72% 51%;
+  --chart-1: 0 72% 51%;
+  --primary-border: hsl(0 72% 43%);
+}
+
+[data-theme="blue"] {
+  --primary: 211 100% 47%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 211 100% 47%;
+  --sidebar-primary: 211 100% 47%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 211 100% 47%;
+  --chart-1: 211 100% 47%;
+  --primary-border: hsl(211 100% 39%);
+}
+
+[data-theme="green"] {
+  --primary: 142 72% 36%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 142 72% 36%;
+  --sidebar-primary: 142 72% 36%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 142 72% 36%;
+  --chart-1: 142 72% 36%;
+  --primary-border: hsl(142 72% 28%);
+}
+
+[data-theme="orange"] {
+  --primary: 25 95% 53%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 25 95% 53%;
+  --sidebar-primary: 25 95% 53%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 25 95% 53%;
+  --chart-1: 25 95% 53%;
+  --primary-border: hsl(25 95% 45%);
+}
+
+[data-theme="pink"] {
+  --primary: 330 81% 60%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 330 81% 60%;
+  --sidebar-primary: 330 81% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 330 81% 60%;
+  --chart-1: 330 81% 60%;
+  --primary-border: hsl(330 81% 52%);
+}
+
+[data-theme="light"] {
+  --primary: 222 47% 25%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 222 47% 25%;
+  --sidebar-primary: 222 47% 25%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-ring: 222 47% 25%;
+  --chart-1: 222 47% 25%;
+  --primary-border: hsl(222 47% 17%);
+}
+
 @layer base {
   * {
     @apply border-border;
