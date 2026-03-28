@@ -77,7 +77,7 @@ pnpm install
 
 ### 3. Set environment variables
 
-Create a `.env` file in the **`artifacts/api-server/`** directory (or set these as system environment variables):
+Create a `.env` file in the **project root** (`apim-dashboard/.env`). The server automatically loads it from there. You can also place it directly inside `artifacts/api-server/` — values there override root values.
 
 ```env
 # PostgreSQL connection (required)
