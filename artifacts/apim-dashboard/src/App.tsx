@@ -12,6 +12,11 @@ import Roles from "@/pages/Roles";
 import PasswordPolicy from "@/pages/PasswordPolicy";
 import Profile from "@/pages/Profile";
 import AppLayout from "@/components/AppLayout";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
+
+// Wire the JWT token into every generated API hook at module load time.
+// The getter is called before each request so it always picks up the latest token.
+setAuthTokenGetter(() => localStorage.getItem("apim_token"));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
