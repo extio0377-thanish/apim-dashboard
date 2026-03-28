@@ -221,12 +221,15 @@ router.get("/metrics/timeseries", async (req, res): Promise<void> => {
   const { clientOrgId, from, to, interval = "1h" } = req.query as Record<string, string>;
   const must = buildMustClauses(clientOrgId, from, to);
 
-  const calendarIntervalMap: Record<string, string> = {
-    "1h": "hour",
-    "6h": "hour",
-    "1d": "day",
+  // Map UI interval → ES bucket size. Uses the legacy `interval` field
+  // (compatible with ES < 7.2). Granularity chosen to give ~12-60 buckets
+  // so charts are readable: 1h→minute, 6h→30m, 1d→hour.
+  const intervalMap: Record<string, string> = {
+    "1h": "minute",
+    "6h": "30m",
+    "1d": "hour",
   };
-  const calInterval = calendarIntervalMap[interval] ?? "hour";
+  const esInterval = intervalMap[interval] ?? "hour";
 
   const body = {
     size: 0,
@@ -235,7 +238,7 @@ router.get("/metrics/timeseries", async (req, res): Promise<void> => {
       over_time: {
         date_histogram: {
           field: "requestStart",
-          calendar_interval: calInterval,
+          interval: esInterval,
           min_doc_count: 0,
         },
         aggs: {
