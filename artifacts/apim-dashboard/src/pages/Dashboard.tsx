@@ -242,8 +242,27 @@ export default function Dashboard() {
   }});
   const syncMutation = useSyncMetrics();
 
-  const loading = summaryQuery.isLoading || summaryQuery.isFetching;
+  // Per-section loading — each card shows its own skeleton until its data arrives
+  const summaryLoading   = summaryQuery.isLoading    || summaryQuery.isFetching;
+  const timeseriesLoading= timeseriesQuery.isLoading || timeseriesQuery.isFetching;
+  const byApiLoading     = byApiQuery.isLoading      || byApiQuery.isFetching;
+  const byCodeLoading    = byCodeQuery.isLoading     || byCodeQuery.isFetching;
+  const byClientLoading  = byClientQuery.isLoading   || byClientQuery.isFetching;
+  const byUserLoading    = byUserQuery.isLoading     || byUserQuery.isFetching;
+  const byResourceLoading= byResourceQuery.isLoading || byResourceQuery.isFetching;
+  const rawLoading       = rawQuery.isLoading        || rawQuery.isFetching;
+  // Keep `loading` for the top refresh button spinner (any query in-flight)
+  const loading = summaryLoading || timeseriesLoading || byApiLoading || byCodeLoading ||
+                  byClientLoading || byUserLoading || byResourceLoading || rawLoading;
   const isSpinning = loading;
+
+  function esErrMsg(q: { isError: boolean; error: unknown }) {
+    if (!q.isError) return null;
+    const msg = q.error instanceof Error ? q.error.message : String(q.error);
+    return msg.includes("ECONNREFUSED") || msg.includes("fetch failed")
+      ? "Cannot reach ElasticSearch"
+      : msg.length > 120 ? msg.slice(0, 120) + "…" : msg;
+  }
 
   const summary = summaryQuery.data;
   const byUser = byUserQuery.data || [];
@@ -430,6 +449,12 @@ export default function Dashboard() {
         </div>
 
         {/* KPIs */}
+        {summaryQuery.isError && (
+          <div className="mb-4 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-4 py-2.5 text-sm text-destructive">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>ElasticSearch error — {esErrMsg(summaryQuery)}. Summary metrics unavailable.</span>
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-6 flex flex-col justify-center">
@@ -437,9 +462,9 @@ export default function Dashboard() {
                 <Activity className="w-4 h-4" />
                 <p className="text-sm font-medium">Total Requests</p>
               </div>
-              {loading ? <Skeleton className="h-8 w-32" /> : (
+              {summaryLoading ? <Skeleton className="h-8 w-32" /> : (
                 <p className="text-3xl font-bold tracking-tight" style={{ color: CHART_COLORS.blue }}>
-                  {summary?.totalRequests?.toLocaleString() || 0}
+                  {summary?.totalRequests?.toLocaleString() ?? 0}
                 </p>
               )}
             </CardContent>
@@ -450,11 +475,11 @@ export default function Dashboard() {
                 <AlertCircle className="w-4 h-4" />
                 <p className="text-sm font-medium">Error Rate</p>
               </div>
-              {loading ? <Skeleton className="h-8 w-32" /> : (
+              {summaryLoading ? <Skeleton className="h-8 w-32" /> : (
                 <p className={`text-3xl font-bold tracking-tight ${
-                  (summary?.errorRate || 0) > 5 ? 'text-red-600' : (summary?.errorRate || 0) < 1 ? 'text-green-600' : ''
+                  (summary?.errorRate ?? 0) > 5 ? 'text-red-600' : (summary?.errorRate ?? 0) < 1 ? 'text-green-600' : ''
                 }`}>
-                  {((summary?.errorRate || 0) * 100).toFixed(2)}%
+                  {(summary?.errorRate ?? 0).toFixed(2)}%
                 </p>
               )}
             </CardContent>
@@ -465,9 +490,9 @@ export default function Dashboard() {
                 <Clock className="w-4 h-4" />
                 <p className="text-sm font-medium">Avg Response Time</p>
               </div>
-              {loading ? <Skeleton className="h-8 w-32" /> : (
+              {summaryLoading ? <Skeleton className="h-8 w-32" /> : (
                 <p className="text-3xl font-bold tracking-tight" style={{ color: CHART_COLORS.blue }}>
-                  {Math.round(summary?.avgDurationMs || 0)} ms
+                  {Math.round(summary?.avgDurationMs ?? 0)} ms
                 </p>
               )}
             </CardContent>
@@ -478,9 +503,9 @@ export default function Dashboard() {
                 <Users className="w-4 h-4" />
                 <p className="text-sm font-medium">Unique Clients</p>
               </div>
-              {loading ? <Skeleton className="h-8 w-32" /> : (
+              {summaryLoading ? <Skeleton className="h-8 w-32" /> : (
                 <p className="text-3xl font-bold tracking-tight" style={{ color: CHART_COLORS.blue }}>
-                  {summary?.uniqueClients?.toLocaleString() || 0}
+                  {summary?.uniqueClients?.toLocaleString() ?? 0}
                 </p>
               )}
             </CardContent>
@@ -505,7 +530,7 @@ export default function Dashboard() {
                   <SelectItem value="1d">1 Day</SelectItem>
                 </SelectContent>
               </Select>
-              {!loading && timeseries.length > 0 && (
+              {!timeseriesLoading && timeseries.length > 0 && (
                 <CSVLink data={timeseries} filename="timeseries.csv" className="print:hidden flex items-center justify-center w-[28px] h-[28px] rounded-[6px] transition-colors hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }} aria-label="Export as CSV">
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
@@ -513,7 +538,12 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="p-5">
-            {loading ? <Skeleton className="w-full h-[300px]" /> : timeseries.length > 0 ? (
+            {timeseriesLoading ? <Skeleton className="w-full h-[300px]" /> : timeseriesQuery.isError ? (
+              <div className="w-full h-[300px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                <AlertCircle className="w-5 h-5 text-destructive/70" />
+                <span className="text-xs">{esErrMsg(timeseriesQuery)}</span>
+              </div>
+            ) : timeseries.length > 0 ? (
               <ResponsiveContainer width="100%" height={300} debounce={0}>
                 <AreaChart data={timeseries}>
                   <defs>
@@ -555,14 +585,19 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between border-b border-border/50">
               <CardTitle className="text-base">Top APIs by Usage</CardTitle>
-              {!loading && byApi.length > 0 && (
+              {!byApiLoading && byApi.length > 0 && (
                 <CSVLink data={byApi} filename="by-api.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-[6px] hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }}>
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
               )}
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? <Skeleton className="w-full h-[250px] m-5" /> : (
+              {byApiLoading ? <Skeleton className="w-full h-[250px] m-5" /> : byApiQuery.isError ? (
+                <div className="h-[250px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <AlertCircle className="w-5 h-5 text-destructive/70" />
+                  <span className="text-xs">{esErrMsg(byApiQuery)}</span>
+                </div>
+              ) : (
                 <Tabs defaultValue="chart" className="w-full">
                   <div className="px-5 pt-3 flex justify-end">
                     <TabsList className="h-8">
@@ -614,14 +649,19 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between border-b border-border/50">
               <CardTitle className="text-base">Response Codes</CardTitle>
-              {!loading && byCode.length > 0 && (
+              {!byCodeLoading && byCode.length > 0 && (
                 <CSVLink data={byCode} filename="by-response-code.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-[6px] hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }}>
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
               )}
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? <Skeleton className="w-full h-[250px] m-5" /> : (
+              {byCodeLoading ? <Skeleton className="w-full h-[250px] m-5" /> : byCodeQuery.isError ? (
+                <div className="h-[250px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <AlertCircle className="w-5 h-5 text-destructive/70" />
+                  <span className="text-xs">{esErrMsg(byCodeQuery)}</span>
+                </div>
+              ) : (
                 <Tabs defaultValue="chart" className="w-full">
                   <div className="px-5 pt-3 flex justify-end">
                     <TabsList className="h-8">
@@ -686,14 +726,19 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between border-b border-border/50">
               <CardTitle className="text-base">Top Clients</CardTitle>
-              {!loading && byClient.length > 0 && (
+              {!byClientLoading && byClient.length > 0 && (
                 <CSVLink data={byClient} filename="by-client.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-[6px] hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }}>
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
               )}
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? <Skeleton className="w-full h-[250px] m-5" /> : (
+              {byClientLoading ? <Skeleton className="w-full h-[250px] m-5" /> : byClientQuery.isError ? (
+                <div className="h-[250px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <AlertCircle className="w-5 h-5 text-destructive/70" />
+                  <span className="text-xs">{esErrMsg(byClientQuery)}</span>
+                </div>
+              ) : (
                 <Tabs defaultValue="chart" className="w-full">
                   <div className="px-5 pt-3 flex justify-end">
                     <TabsList className="h-8">
@@ -729,7 +774,7 @@ export default function Dashboard() {
                               <TableCell className="font-medium text-xs font-mono">{row.key}</TableCell>
                               <TableCell className="text-right text-xs">{row.count.toLocaleString()}</TableCell>
                               <TableCell className="text-right text-xs text-green-600">{row.successCount.toLocaleString()}</TableCell>
-                              <TableCell className="text-right text-xs text-red-600">{(row.errorRate * 100).toFixed(1)}%</TableCell>
+                              <TableCell className="text-right text-xs text-red-600">{row.errorRate.toFixed(1)}%</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -745,14 +790,19 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between border-b border-border/50">
               <CardTitle className="text-base">Top Users</CardTitle>
-              {!loading && byUser.length > 0 && (
+              {!byUserLoading && byUser.length > 0 && (
                 <CSVLink data={byUser} filename="by-user.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-[6px] hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }}>
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
               )}
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? <Skeleton className="w-full h-[250px] m-5" /> : (
+              {byUserLoading ? <Skeleton className="w-full h-[250px] m-5" /> : byUserQuery.isError ? (
+                <div className="h-[250px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <AlertCircle className="w-5 h-5 text-destructive/70" />
+                  <span className="text-xs">{esErrMsg(byUserQuery)}</span>
+                </div>
+              ) : (
                 <Tabs defaultValue="chart" className="w-full">
                   <div className="px-5 pt-3 flex justify-end">
                     <TabsList className="h-8">
@@ -787,7 +837,7 @@ export default function Dashboard() {
                             <TableRow key={row.key || 'unknown'}>
                               <TableCell className="font-medium text-xs">{row.key || 'Unknown'}</TableCell>
                               <TableCell className="text-right text-xs">{row.count.toLocaleString()}</TableCell>
-                              <TableCell className="text-right text-xs text-red-600">{(row.errorRate * 100).toFixed(1)}%</TableCell>
+                              <TableCell className="text-right text-xs text-red-600">{row.errorRate.toFixed(1)}%</TableCell>
                               <TableCell className="text-right text-xs">{Math.round(row.avgDurationMs)}ms</TableCell>
                             </TableRow>
                           ))}
@@ -804,14 +854,19 @@ export default function Dashboard() {
           <Card className="lg:col-span-2">
             <CardHeader className="px-5 pt-5 pb-3 flex-row items-center justify-between border-b border-border/50">
               <CardTitle className="text-base">Top Resources (Paths)</CardTitle>
-              {!loading && byResource.length > 0 && (
+              {!byResourceLoading && byResource.length > 0 && (
                 <CSVLink data={byResource} filename="by-resource.csv" className="print:hidden flex items-center justify-center w-[26px] h-[26px] rounded-[6px] hover:opacity-80" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "#F0F1F2", color: isDark ? "#c8c9cc" : "#4b5563" }}>
                   <Download className="w-3.5 h-3.5" />
                 </CSVLink>
               )}
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? <Skeleton className="w-full h-[300px] m-5" /> : (
+              {byResourceLoading ? <Skeleton className="w-full h-[300px] m-5" /> : byResourceQuery.isError ? (
+                <div className="h-[300px] flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <AlertCircle className="w-5 h-5 text-destructive/70" />
+                  <span className="text-xs">{esErrMsg(byResourceQuery)}</span>
+                </div>
+              ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                   <div className="p-5 pr-2">
                     <ResponsiveContainer width="100%" height={250} debounce={0}>
@@ -980,12 +1035,17 @@ export default function Dashboard() {
             )}
           </CardHeader>
           <CardContent className="p-0">
-            {loading ? (
+            {rawLoading ? (
               <div className="p-5 space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
+              </div>
+            ) : rawQuery.isError ? (
+              <div className="h-40 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                <AlertCircle className="w-5 h-5 text-destructive/70" />
+                <span className="text-xs">{rawQuery.error instanceof Error ? rawQuery.error.message : "Failed to load records"}</span>
               </div>
             ) : (
               <div className="overflow-x-auto">
