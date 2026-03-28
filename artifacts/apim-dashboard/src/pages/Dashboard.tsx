@@ -144,7 +144,7 @@ function getStatusColor(code: number | string) {
 export default function Dashboard() {
   const queryClient = useQueryClient();
   const [isDark, setIsDark] = useState(false);
-  const [clientOrgId, setClientOrgId] = useState<"PRODUCTION-DTBU" | "SANDBOX-DTBU">("PRODUCTION-DTBU");
+  const [clientOrgId, setClientOrgId] = useState<"PRODUCTION-DTBU" | "SANDBOX-DTBU" | "">("PRODUCTION-DTBU");
   
   // Date range filter
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -220,7 +220,10 @@ export default function Dashboard() {
     queryClient.invalidateQueries();
   };
 
-  const commonParams = { clientOrgId, from: fromIso, to: toIso };
+  // When clientOrgId is "" (All Environments), omit the filter entirely so ES returns all data
+  const commonParams = clientOrgId
+    ? { clientOrgId, from: fromIso, to: toIso }
+    : { from: fromIso, to: toIso };
 
   const summaryQuery = useGetMetricsSummary({ params: commonParams });
   const byUserQuery = useGetMetricsByUser({ params: { ...commonParams, size: 10 } });
@@ -412,8 +415,9 @@ export default function Dashboard() {
         {/* Filters Row */}
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4 p-4 rounded-lg bg-card border print:hidden">
           <div className="flex-1 w-full lg:w-auto">
-            <Tabs value={clientOrgId} onValueChange={(v: any) => setClientOrgId(v)} className="w-full max-w-[400px]">
-              <TabsList className="grid w-full grid-cols-2">
+            <Tabs value={clientOrgId} onValueChange={(v: any) => setClientOrgId(v)} className="w-full max-w-[480px]">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="">All Environments</TabsTrigger>
                 <TabsTrigger value="PRODUCTION-DTBU">Production</TabsTrigger>
                 <TabsTrigger value="SANDBOX-DTBU">Sandbox</TabsTrigger>
               </TabsList>
