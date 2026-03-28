@@ -1,0 +1,252 @@
+curl -X GET "http://10.0.3.3:19200/apiman_metrics/_search" \
+-H "Content-Type: application/json" \
+-d '
+{
+  "size": 6,
+  "sort": [
+    {
+      "requestStart": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+'
+
+{
+  "took": 125,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 17847935,
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdtq5AYphYEplZn2",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:02+0300",
+          "requestEnd": "2026-03-28T12:37:02+0300",
+          "requestDuration": 121,
+          "apiStart": "2026-03-28T12:37:02+0300",
+          "apiEnd": "2026-03-28T12:37:02+0300",
+          "apiDuration": 100,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/DSBCustomerService/1.0",
+          "method": "POST",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "DSBCustomerService",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "Sybrin-BPM-Consolidated-SOAP",
+          "clientVersion": "1.0",
+          "contractId": "ddc9e4fa-68e6-4b51-832b-190d279cb9ec",
+          "user": "ug_sybrin_consolidated_user",
+          "responseCode": 200,
+          "responseMessage": "OK",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 827,
+          "bytesDownloaded": 3230,
+          "attributes": {}
+        },
+        "sort": [
+          1774690622000
+        ]
+      },
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdjz5AYphYEplZn0",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:01+0300",
+          "requestEnd": "2026-03-28T12:37:01+0300",
+          "requestDuration": 57,
+          "apiStart": "2026-03-28T12:37:01+0300",
+          "apiEnd": "2026-03-28T12:37:01+0300",
+          "apiDuration": 35,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/AZCoreServices/1.0/co/query-customer-deposit/000325396",
+          "resource": "/co/query-customer-deposit/000325396",
+          "method": "GET",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "AZCoreServices",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "Cellulant-Phoenix-m247-REST",
+          "clientVersion": "1.0",
+          "contractId": "5e3c0053-7649-4d50-8616-c42e946a27cc",
+          "user": "ug_cellulant_phoenix_user",
+          "responseCode": 555,
+          "responseMessage": "status code 555",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 0,
+          "bytesDownloaded": 36,
+          "attributes": {}
+        },
+        "sort": [
+          1774690621000
+        ]
+      },
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdhp5AYphYEplZnz",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:01+0300",
+          "requestEnd": "2026-03-28T12:37:01+0300",
+          "requestDuration": 123,
+          "apiStart": "2026-03-28T12:37:01+0300",
+          "apiEnd": "2026-03-28T12:37:01+0300",
+          "apiDuration": 100,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/AZCoreServices/1.0/co/query-account-direct/5325396001",
+          "resource": "/co/query-account-direct/5325396001",
+          "method": "GET",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "AZCoreServices",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "Cellulant-Phoenix-m247-REST",
+          "clientVersion": "1.0",
+          "contractId": "5e3c0053-7649-4d50-8616-c42e946a27cc",
+          "user": "ug_cellulant_phoenix_user",
+          "responseCode": 200,
+          "responseMessage": "OK",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 0,
+          "bytesDownloaded": 1022,
+          "attributes": {}
+        },
+        "sort": [
+          1774690621000
+        ]
+      },
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdmu5AYphYEplZn1",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:01+0300",
+          "requestEnd": "2026-03-28T12:37:01+0300",
+          "requestDuration": 109,
+          "apiStart": "2026-03-28T12:37:01+0300",
+          "apiEnd": "2026-03-28T12:37:01+0300",
+          "apiDuration": 88,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/AZCoreServices/1.0/co/query-account-direct/7325396001",
+          "resource": "/co/query-account-direct/7325396001",
+          "method": "GET",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "AZCoreServices",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "Cellulant-Phoenix-m247-REST",
+          "clientVersion": "1.0",
+          "contractId": "5e3c0053-7649-4d50-8616-c42e946a27cc",
+          "user": "ug_cellulant_phoenix_user",
+          "responseCode": 200,
+          "responseMessage": "OK",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 0,
+          "bytesDownloaded": 1022,
+          "attributes": {}
+        },
+        "sort": [
+          1774690621000
+        ]
+      },
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdzF5AYphYEplZn3",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:01+0300",
+          "requestEnd": "2026-03-28T12:37:02+0300",
+          "requestDuration": 945,
+          "apiStart": "2026-03-28T12:37:01+0300",
+          "apiEnd": "2026-03-28T12:37:02+0300",
+          "apiDuration": 926,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/AZCardPaymentServices/1.0/master-card/PTSP/debit-card/cardless-deposit",
+          "resource": "/master-card/PTSP/debit-card/cardless-deposit",
+          "method": "POST",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "AZCardPaymentServices",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "ABC-Agency-Consolidated-REST",
+          "clientVersion": "1.0",
+          "contractId": "3040c0cd-c1b5-45c9-b05f-ea4e796e7ac5",
+          "user": "ug_abc_consolidated_user",
+          "responseCode": 200,
+          "responseMessage": "OK",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 458,
+          "bytesDownloaded": 533,
+          "attributes": {}
+        },
+        "sort": [
+          1774690621000
+        ]
+      },
+      {
+        "_index": "apiman_metrics",
+        "_type": "request",
+        "_id": "AZ0zzdQx5AYphYEplZny",
+        "_score": null,
+        "_source": {
+          "requestStart": "2026-03-28T12:37:00+0300",
+          "requestEnd": "2026-03-28T12:37:00+0300",
+          "requestDuration": 272,
+          "apiStart": "2026-03-28T12:37:00+0300",
+          "apiEnd": "2026-03-28T12:37:00+0300",
+          "apiDuration": 251,
+          "url": "https://srv-prod-lbr:8443/apizone-gateway/PRODUCTION-DTBU/AZCardPaymentServices/1.0/master-card/PTSP/debit-card/balance-inquiry",
+          "resource": "/master-card/PTSP/debit-card/balance-inquiry",
+          "method": "POST",
+          "apiOrgId": "PRODUCTION-DTBU",
+          "apiId": "AZCardPaymentServices",
+          "apiVersion": "1.0",
+          "planId": "Plan1M",
+          "clientOrgId": "PRODUCTION-DTBU",
+          "clientId": "Payway-Agency-REST",
+          "clientVersion": "1.0",
+          "contractId": "b7d56331-7d35-47c9-a5d3-898b2d0a8501",
+          "user": "ug_payway_agency_user",
+          "responseCode": 200,
+          "responseMessage": "OK",
+          "failure": false,
+          "failureCode": 0,
+          "error": false,
+          "bytesUploaded": 402,
+          "bytesDownloaded": 551,
+          "attributes": {}
+        },
+        "sort": [
+          1774690620000
+        ]
+      }
+    ]
+  }
+}
